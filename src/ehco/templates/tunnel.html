@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ tunnel.name }} · {{ app_name }}{% endblock %}
+{% block nav %}
+  <a href="{{ url_for('index') }}">Tunnels</a>
+  <a href="{{ url_for('add_form') }}">New tunnel</a>
+{% endblock %}
+{% block navright %}<a class="btn g" href="{{ url_for('index') }}">Back</a>{% endblock %}
+{% block content %}
+<h1 style="font-size:20px;margin-bottom:12px">{{ tunnel.name }}</h1>
+
+<div class="card"><div class="row">
+  <span class="stat"><b class="mono">{{ tunnel.listen }}</b><span>listen</span></span>
+  <span class="stat"><b>{{ tunnel.proto }}</b><span>proto</span></span>
+  <span class="stat"><b>{{ tunnel.lb }}</b><span>load balancing</span></span>
+  <span class="stat"><b>{% if tunnel.tls %}on{% else %}off{% endif %}</b><span>tls</span></span>
+  <span class="stat"><b>{{ bytes_total }}</b><span>bytes</span></span>
+</div></div>
+
+<div class="card">
+<h2>Upstreams</h2>
+{% if upstreams %}
+<table>
+<tr><th>id</th><th>addr</th><th>weight</th><th>state</th><th>last check</th><th></th></tr>
+{% for u in upstreams %}
+<tr>
+  <td class="mono">{{ u.id }}</td>
+  <td class="mono">{{ u.addr }}</td>
+  <td class="mono">{{ u.weight }}</td>
+  <td>{% if u.healthy %}<span class="tag g">healthy</span>{% else %}<span class="tag r">down</span>{% endif %}</td>
+  <td class="mono">{{ u.last_check or 'never' }}</td>
+  <td><div class="row">
+    <form method="post" action="{{ url_for('check_upstream', tid=tunnel.id, uid=u.id) }}"><button class="btn g" type="submit">Check</button></form>
+    <form method="post" action="{{ url_for('delete_upstream', tid=tunnel.id, uid=u.id) }}"><button class="btn r" type="submit">Remove</button></form>
+  </div></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p class="empty">No upstreams yet — the load balancer has nothing to pick from.</p>
+{% endif %}
+<form method="post" action="{{ url_for('add_upstream', tid=tunnel.id) }}" style="margin-top:12px">
+  <div class="row">
+    <label for="addr">Address</label>
+    <input id="addr" name="addr" required placeholder="127.0.0.1:8080">
+    <label for="weight">Weight</label>
+    <input id="weight" name="weight" type="number" min="1" value="1" style="width:90px">
+    <button class="btn" type="submit">Add upstream</button>
+  </div>
+</form>
+</div>
+
+<div class="card">
+<h2>Traffic samples</h2>
+{% if history %}
+<table>
+<tr><th>id</th><th>bytes</th><th>at</th></tr>
+{% for s in history %}
+<tr><td class="mono">{{ s.id }}</td><td class="mono">{{ s.bytes }}</td><td class="mono">{{ s.at }}</td></tr>
+{% endfor %}
+</table>
+{% else %}
+<p class="empty">No stats rows for this tunnel yet.</p>
+{% endif %}
+</div>
+
+<form method="post" action="{{ url_for('delete_tunnel', tid=tunnel.id) }}">
+  <button class="btn r" type="submit">Delete this tunnel</button>
+</form>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Tunnels · {{ app_name }}{% endblock %}
+{% block nav %}
+  <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>Tunnels</a>
+  <a href="{{ url_for('add_form') }}">New tunnel</a>
+  <a href="{{ url_for('api_health') }}">Health</a>
+{% endblock %}
+{% block navright %}<a class="btn" href="{{ url_for('add_form') }}">+ Tunnel</a>{% endblock %}
+{% block content %}
+<h1 style="font-size:20px;margin-bottom:12px">Relay tunnels</h1>
+
+<div class="card"><div class="row">
+  <span class="stat"><b>{{ tunnel_count }}</b><span>tunnels</span></span>
+  <span class="stat"><b>{{ upstream_count }}</b><span>upstreams</span></span>
+  <span class="stat"><b>{{ healthy_count }}</b><span>healthy</span></span>
+  <span class="stat"><b>{{ total_bytes }}</b><span>bytes relayed</span></span>
+</div></div>
+
+<div class="card">
+<h2>Tunnels</h2>
+{% if tunnels %}
+<table>
+<tr><th>id</th><th>name</th><th>listen</th><th>proto</th><th>lb</th><th>tls</th><th>upstreams</th><th>bytes</th><th></th></tr>
+{% for row in tunnels %}
+<tr>
+  <td class="mono">{{ row.t.id }}</td>
+  <td><a href="{{ url_for('tunnel_detail', tid=row.t.id) }}" style="color:var(--accent);text-decoration:none">{{ row.t.name }}</a></td>
+  <td class="mono">{{ row.t.listen }}</td>
+  <td><span class="tag">{{ row.t.proto }}</span></td>
+  <td class="mono">{{ row.t.lb }}</td>
+  <td>{% if row.t.tls %}<span class="tag g">on</span>{% else %}<span class="tag y">off</span>{% endif %}</td>
+  <td>{% if row.upstreams == 0 %}<span class="empty">none</span>{% else %}{{ row.healthy }}/{{ row.upstreams }} up{% endif %}</td>
+  <td class="mono">{{ row.bytes }}</td>
+  <td><form method="post" action="{{ url_for('delete_tunnel', tid=row.t.id) }}"><button class="btn r" type="submit">Delete</button></form></td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p class="empty">No tunnels yet. <a href="{{ url_for('add_form') }}" style="color:var(--accent)">Create the first one</a>.</p>
+{% endif %}
+</div>
+
+<div class="card">
+<h2>Registered HTTP routes</h2>
+<table>
+<tr><th>rule</th><th>methods</th><th>endpoint</th></tr>
+{% for r in routes %}
+<tr><td class="mono">{{ r.rule }}</td><td class="mono">{{ r.methods }}</td><td class="mono">{{ r.endpoint }}</td></tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

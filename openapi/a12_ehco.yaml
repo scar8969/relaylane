@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  title: "🔗 ehco"
+  version: 0.1.0
+paths:
+  /api/tunnels:
+    post:
+      summary: add tunnel
+      responses:
+        "200":
+          description: ok
+  /api/tunnels:
+    get:
+      summary: list
+      responses:
+        "200":
+          description: ok
+  /api/upstreams:
+    post:
+      summary: add upstream
+      responses:
+        "200":
+          description: ok
+  /api/stats:
+    get:
+      summary: stats
+      responses:
+        "200":
+          description: ok

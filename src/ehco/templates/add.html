@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}New tunnel · {{ app_name }}{% endblock %}
+{% block nav %}
+  <a href="{{ url_for('index') }}">Tunnels</a>
+  <a href="{{ url_for('add_form') }}" {% if request.endpoint == 'add_form' %}class="active"{% endif %}>New tunnel</a>
+{% endblock %}
+{% block content %}
+<h1 style="font-size:20px;margin-bottom:12px">Create a tunnel</h1>
+<div class="card">
+<form method="post" action="{{ url_for('create_tunnel') }}">
+  <div class="row" style="margin-bottom:10px">
+    <label for="name">Name</label>
+    <input id="name" name="name" required value="{{ form.name or '' }}" placeholder="web-tls">
+    <label for="listen">Listen</label>
+    <input id="listen" name="listen" required value="{{ form.listen or '0.0.0.0:8443' }}">
+    <label for="proto">Proto</label>
+    <select id="proto" name="proto">
+      {% for p in protos %}<option value="{{ p }}" {% if form.proto == p %}selected{% endif %}>{{ p }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="row" style="margin-bottom:14px">
+    <label for="lb">Load balancing</label>
+    <select id="lb" name="lb">
+      {% for m in lb_modes %}<option value="{{ m }}" {% if form.lb == m %}selected{% endif %}>{{ m }}</option>{% endfor %}
+    </select>
+    <label for="cert_path">Certificate path</label>
+    <input id="cert_path" name="cert_path" value="{{ form.cert_path or '' }}" placeholder="/etc/ssl/certs/web.pem">
+    <label for="tls">TLS</label>
+    <input id="tls" type="checkbox" name="tls" value="1" {% if form.tls %}checked{% endif %}>
+  </div>
+  <button class="btn" type="submit">Create tunnel</button>
+  <a class="btn g" href="{{ url_for('index') }}">Cancel</a>
+</form>
+</div>
+<p class="empty">Upstreams are added from the tunnel page once the tunnel exists.</p>
+{% endblock %}
