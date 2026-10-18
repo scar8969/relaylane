@@ -3,13 +3,13 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "a12-ehco"
+name = "relaylane"
 version = "0.1.0"
-description = "python wsgi.py            # serves on http://127.0.0.1:8000"
+description = "TCP/UDP relay with load balancing: add tunnels, pick upstreams, watch per-tunnel counters."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "project-skeletons maintainers" }]
+authors = [{ name = "Priyanshu Rout" }]
 keywords = ["flask", "service", "ehco"]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -46,7 +46,7 @@ Documentation = "https://example.invalid/ehco/docs"
 Issues = "https://example.invalid/ehco/issues"
 
 [project.scripts]
-a12-ehco = "ehco.cli:main"
+relaylane = "ehco.cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

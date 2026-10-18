@@ -76,7 +76,7 @@ process_uptime_seconds 0.659
 `/version` answered **200**:
 
 ```
-{"config":{"app_name":"ehco","data_dir":"C:\\Users\\priya\\Desktop\\project-skeletons\\projects\\a12_ehco\\var","database_configured":false,"debug":false,"env":"development","host":"0.0.0.0","legacy_env_present":[],"log_json":true,"log_level":"INFO","port":8000,"secret_key_configured":false},"paths":{"data_dir":"C:\\Users\\priya\\Desktop\\project-skeletons\\projects\\a12_ehco\\var","instance_dir":
+{"config":{"app_name":"ehco","data_dir":".\\var","database_configured":false,"debug":false,"env":"development","host":"0.0.0.0","legacy_env_present":[],"log_json":true,"log_level":"INFO","port":8000,"secret_key_configured":false},"paths":{"data_dir":".\\var","instance_dir":
 ```
 
 ## Headers observed on /healthz

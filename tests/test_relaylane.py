@@ -1,4 +1,4 @@
-"""A12 ehco — tests. Run: pytest test_a12_ehco.py"""
+"""A12 ehco — tests. Run: pytest test_relaylane.py"""
 import sys, os
 
 import pytest

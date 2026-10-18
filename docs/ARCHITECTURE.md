@@ -9,7 +9,7 @@ they do, and what breaks first under load.
 
 ## 1. Context
 
-a12_ehco is a single-process Flask service. It owns its own database (SQLite by
+relaylane is a single-process Flask service. It owns its own database (SQLite by
 default, any SQLAlchemy-supported backend via `DATABASE_URL`) and is deployed
 behind a reverse proxy or an orchestrator.
 
@@ -76,7 +76,7 @@ flowchart TB
 | `templates/base.html` | asset |
 | `templates/index.html` | asset |
 | `templates/tunnel.html` | asset |
-| `tests/test_a12_ehco.py` | module |
+| `tests/test_relaylane.py` | module |
 | `_app.py` | asset |
 
 ---
@@ -139,9 +139,9 @@ writable lives under `/app`.
 
 | Table | Owner |
 | --- | --- |
-| `tunnels` | owned by `a12_ehco` |
-| `upstreams` | owned by `a12_ehco` |
-| `stats` | owned by `a12_ehco` |
+| `tunnels` | owned by `relaylane` |
+| `upstreams` | owned by `relaylane` |
+| `stats` | owned by `relaylane` |
 
 Tables are created by the application's own bootstrap on first use. No migration
 tool is wired in; the schema is additive, and the service tolerates a missing or

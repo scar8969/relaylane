@@ -34,7 +34,7 @@ RUN groupadd --system --gid 1001 app \
 WORKDIR /app
 
 COPY --from=builder /wheels /wheels
-RUN python -m pip install --no-cache-dir --no-index --find-links=/wheels a12-ehco \
+RUN python -m pip install --no-cache-dir --no-index --find-links=/wheels relaylane \
  && rm -rf /wheels \
  && mkdir -p /var/lib/ehco/instance /var/lib/ehco/log \
  && chown -R app:app /var/lib/ehco /app
