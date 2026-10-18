@@ -66,6 +66,7 @@ Every route below is in [`openapi/relaylane.yaml`](openapi/relaylane.yaml) and i
 | Method | Path | What it does |
 | --- | --- | --- |
 | `GET` | `/api/tunnels` | list |
+| `POST` | `/api/tunnels` | add tunnel |
 | `POST` | `/api/upstreams` | add upstream |
 | `GET` | `/api/stats` | stats |
 
@@ -100,7 +101,7 @@ These numbers were produced on this checkout by `pytest --cov` and by booting `w
 
 | Signal | Value |
 | --- | --- |
-| Tests | **25 / 25 passed** (6.0 s, exit 0) |
+| Tests | **25 / 25 passed** (3.8 s, exit 0) |
 | Line coverage | **57.4%** — 442 of 734 statements |
 | Source | 16 files / 1,555 lines |
 | Test code | 4 files / 244 lines |
