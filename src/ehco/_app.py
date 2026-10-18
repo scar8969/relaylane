@@ -89,7 +89,7 @@ def build_app():
 
     @app.post("/tunnels/new")
     def create_tunnel():
-        form = {
+        form: dict[str, object] = {
             k: request.form.get(k, "").strip()
             for k in ("name", "listen", "proto", "lb", "cert_path")
         }
@@ -222,7 +222,7 @@ def build_app():
         """Every registered GET/HEAD rule, for the index page route table."""
         rows = []
         for rule in sorted(app.url_map.iter_rules(), key=lambda r: str(r)):
-            methods = sorted(m for m in rule.methods if m in ("GET", "POST"))
+            methods = sorted(m for m in (rule.methods or set()) if m in ("GET", "POST"))
             rows.append(
                 {"rule": str(rule), "endpoint": rule.endpoint, "methods": ", ".join(methods)}
             )

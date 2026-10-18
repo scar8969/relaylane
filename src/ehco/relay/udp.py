@@ -1,4 +1,5 @@
 import asyncio
+from typing import Any
 
 from ..models import Tunnel
 
@@ -8,7 +9,7 @@ class UdpRelay:
         self.tunnel = tunnel
         self.upstreams = upstreams
         self.on_bytes = on_bytes
-        self.transport = None
+        self.transport: Any = None
 
     async def start(self) -> None:
         loop = asyncio.get_running_loop()

@@ -13,7 +13,7 @@ def health_check(addr, proto="tcp"):
 class LoadBalancer:
     def __init__(self, mode: str = "least-conn"):
         self.mode = mode
-        self._conns = {}
+        self._conns: dict[str, int] = {}
         self._rr = 0
 
     def pick(self, upstreams):
