@@ -5,24 +5,26 @@ package directory (web/), while the templates live one level up in the project
 root.  The path below is absolute and derived from this module's own file, so
 the lookup is correct no matter which directory the process was started from.
 """
+
 import os
 from datetime import datetime
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 
+from . import paths
 from .models import Stats, Tunnel, Upstream, db
 from .relay.api import bp
-from . import paths
 
 APP_NAME = "U0001f517 ehco"
 PROTOS = ("tcp", "udp")
 LB_MODES = ("least-conn", "round-robin")
 
+
 def build_app():
     """Build the application: configuration, database, then routes."""
-    app = Flask(__name__,
-                template_folder=str(paths.TEMPLATES_DIR),
-                instance_path=str(paths.INSTANCE_DIR))
+    app = Flask(
+        __name__, template_folder=str(paths.TEMPLATES_DIR), instance_path=str(paths.INSTANCE_DIR)
+    )
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + str(paths.INSTANCE_DIR / "ehco.db")
     db.init_app(app)
     with app.app_context():
@@ -53,13 +55,15 @@ def build_app():
         return sum(s.bytes or 0 for s in Stats.query.filter_by(tunnel_id=tunnel_id).all())
 
     def _page_context(**extra):
-        ctx = {"app_name": APP_NAME,
-               "tunnel_count": Tunnel.query.count(),
-               "upstream_count": Upstream.query.count(),
-               "healthy_count": Upstream.query.filter_by(healthy=1).count(),
-               "total_bytes": sum(s.bytes or 0 for s in Stats.query.all()),
-               "protos": PROTOS,
-               "lb_modes": LB_MODES}
+        ctx = {
+            "app_name": APP_NAME,
+            "tunnel_count": Tunnel.query.count(),
+            "upstream_count": Upstream.query.count(),
+            "healthy_count": Upstream.query.filter_by(healthy=1).count(),
+            "total_bytes": sum(s.bytes or 0 for s in Stats.query.all()),
+            "protos": PROTOS,
+            "lb_modes": LB_MODES,
+        }
         ctx.update(extra)
         return ctx
 
@@ -67,10 +71,17 @@ def build_app():
     def index():
         tunnels = []
         for t in Tunnel.query.order_by(Tunnel.id).all():
-            tunnels.append({"t": t, "upstreams": Upstream.query.filter_by(tunnel_id=t.id).count(),
-                            "healthy": _healthy_count(t.id), "bytes": _tunnel_bytes(t.id)})
-        return render_template("index.html", routes=_app_routes(), tunnels=tunnels,
-                               **_page_context())
+            tunnels.append(
+                {
+                    "t": t,
+                    "upstreams": Upstream.query.filter_by(tunnel_id=t.id).count(),
+                    "healthy": _healthy_count(t.id),
+                    "bytes": _tunnel_bytes(t.id),
+                }
+            )
+        return render_template(
+            "index.html", routes=_app_routes(), tunnels=tunnels, **_page_context()
+        )
 
     @app.get("/tunnels/new")
     def add_form():
@@ -78,8 +89,10 @@ def build_app():
 
     @app.post("/tunnels/new")
     def create_tunnel():
-        form = {k: request.form.get(k, "").strip() for k in
-                ("name", "listen", "proto", "lb", "cert_path")}
+        form = {
+            k: request.form.get(k, "").strip()
+            for k in ("name", "listen", "proto", "lb", "cert_path")
+        }
         form["tls"] = bool(request.form.get("tls"))
         errors = []
         if not form["name"]:
@@ -100,8 +113,14 @@ def build_app():
             for msg in errors:
                 flash(msg, "error")
             return render_template("add.html", form=form, **_page_context()), 400
-        t = Tunnel(name=form["name"], listen=form["listen"], proto=form["proto"],
-                   tls=1 if form["tls"] else 0, cert_path=form["cert_path"], lb=form["lb"])
+        t = Tunnel(
+            name=form["name"],
+            listen=form["listen"],
+            proto=form["proto"],
+            tls=1 if form["tls"] else 0,
+            cert_path=form["cert_path"],
+            lb=form["lb"],
+        )
         db.session.add(t)
         db.session.commit()
         flash("tunnel %s created" % t.name, "success")
@@ -114,8 +133,14 @@ def build_app():
             return render_template("404.html", missing="tunnel %d" % tid, **_page_context()), 404
         upstreams = Upstream.query.filter_by(tunnel_id=t.id).order_by(Upstream.id).all()
         history = Stats.query.filter_by(tunnel_id=t.id).order_by(Stats.id.desc()).limit(20).all()
-        return render_template("tunnel.html", tunnel=t, upstreams=upstreams, history=history,
-                               bytes_total=_tunnel_bytes(t.id), **_page_context())
+        return render_template(
+            "tunnel.html",
+            tunnel=t,
+            upstreams=upstreams,
+            history=history,
+            bytes_total=_tunnel_bytes(t.id),
+            **_page_context(),
+        )
 
     @app.post("/tunnels/<int:tid>/delete")
     def delete_tunnel(tid):
@@ -162,8 +187,10 @@ def build_app():
         u.healthy = 1 if health_check(u.addr) else 0
         u.last_check = datetime.utcnow()
         db.session.commit()
-        flash("%s is %s" % (u.addr, "reachable" if u.healthy else "unreachable"),
-              "success" if u.healthy else "error")
+        flash(
+            "%s is %s" % (u.addr, "reachable" if u.healthy else "unreachable"),
+            "success" if u.healthy else "error",
+        )
         return redirect(url_for("tunnel_detail", tid=tid))
 
     @app.post("/tunnels/<int:tid>/upstreams/<int:uid>/delete")
@@ -181,24 +208,30 @@ def build_app():
     def api_health():
         """Liveness plus the relay's own view of its upstreams."""
         upstreams = Upstream.query.all()
-        return jsonify({"status": "ok",
-                        "tunnels": Tunnel.query.count(),
-                        "upstreams": len(upstreams),
-                        "healthy": sum(1 for u in upstreams if u.healthy),
-                        "bytes": sum(s.bytes or 0 for s in Stats.query.all())})
+        return jsonify(
+            {
+                "status": "ok",
+                "tunnels": Tunnel.query.count(),
+                "upstreams": len(upstreams),
+                "healthy": sum(1 for u in upstreams if u.healthy),
+                "bytes": sum(s.bytes or 0 for s in Stats.query.all()),
+            }
+        )
 
     def _app_routes():
         """Every registered GET/HEAD rule, for the index page route table."""
         rows = []
         for rule in sorted(app.url_map.iter_rules(), key=lambda r: str(r)):
             methods = sorted(m for m in rule.methods if m in ("GET", "POST"))
-            rows.append({"rule": str(rule), "endpoint": rule.endpoint,
-                         "methods": ", ".join(methods)})
+            rows.append(
+                {"rule": str(rule), "endpoint": rule.endpoint, "methods": ", ".join(methods)}
+            )
         return rows
 
     if __name__ == "__main__":
         app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "8000")))
 
     return app
+
 
 app = build_app()

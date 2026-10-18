@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
+
 
 class Tunnel(db.Model):
     __tablename__ = "tunnels"
@@ -14,6 +16,7 @@ class Tunnel(db.Model):
     lb = db.Column(db.String(16), default="least-conn")  # round-robin|least-conn
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
 class Upstream(db.Model):
     __tablename__ = "upstreams"
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +25,7 @@ class Upstream(db.Model):
     weight = db.Column(db.Integer, default=1)
     healthy = db.Column(db.Integer, default=1)
     last_check = db.Column(db.DateTime, nullable=True)
+
 
 class Stats(db.Model):
     __tablename__ = "stats"

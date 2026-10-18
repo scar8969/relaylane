@@ -1,5 +1,6 @@
 import socket
 
+
 def health_check(addr, proto="tcp"):
     host, port = addr.rsplit(":", 1)
     try:
@@ -7,6 +8,7 @@ def health_check(addr, proto="tcp"):
             return True
     except Exception:
         return False
+
 
 class LoadBalancer:
     def __init__(self, mode: str = "least-conn"):

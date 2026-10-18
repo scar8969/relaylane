@@ -1,6 +1,7 @@
+import asyncio
+
 from ..models import Tunnel
 
-import asyncio
 
 class UdpRelay:
     def __init__(self, tunnel: Tunnel, upstreams: list, on_bytes):
@@ -13,18 +14,23 @@ class UdpRelay:
         loop = asyncio.get_running_loop()
         host, port = self.tunnel.listen.rsplit(":", 1)
         self.transport, _ = await loop.create_datagram_endpoint(
-            lambda: _Proto(self), local_addr=(host, int(port)))
+            lambda: _Proto(self), local_addr=(host, int(port))
+        )
         return self.transport
 
     async def forward(self, packet) -> None:
         from .lb import LoadBalancer
+
         up = LoadBalancer(self.tunnel.lb).pick(self.upstreams)
         if up is None or self.transport is None:
             return
         host, port = up.addr.rsplit(":", 1)
         self.transport.sendto(packet, (host, int(port)))
 
+
 class _Proto(asyncio.DatagramProtocol):
-    def __init__(self, relay): self.relay = relay
+    def __init__(self, relay):
+        self.relay = relay
+
     def datagram_received(self, data, addr):
         self.relay.on_bytes(len(data), True)
