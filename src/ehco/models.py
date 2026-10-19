@@ -1,6 +1,6 @@
-from datetime import datetime
-
 from flask_sqlalchemy import SQLAlchemy
+
+from .clock import utcnow
 
 db = SQLAlchemy()
 
@@ -14,7 +14,7 @@ class Tunnel(db.Model):
     tls = db.Column(db.Integer, default=0)
     cert_path = db.Column(db.String(256), default="")
     lb = db.Column(db.String(16), default="least-conn")  # round-robin|least-conn
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
 
 
 class Upstream(db.Model):
@@ -32,4 +32,4 @@ class Stats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tunnel_id = db.Column(db.Integer, db.ForeignKey("tunnels.id"))
     bytes = db.Column(db.BigInteger, default=0)
-    at = db.Column(db.DateTime, default=datetime.utcnow)
+    at = db.Column(db.DateTime, default=utcnow)

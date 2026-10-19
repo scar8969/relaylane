@@ -7,11 +7,11 @@ the lookup is correct no matter which directory the process was started from.
 """
 
 import os
-from datetime import datetime
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 
 from . import paths
+from .clock import utcnow
 from .models import Stats, Tunnel, Upstream, db
 from .relay.api import bp
 
@@ -185,7 +185,7 @@ def build_app():
             flash("upstream %d is gone" % uid, "error")
             return redirect(url_for("tunnel_detail", tid=tid))
         u.healthy = 1 if health_check(u.addr) else 0
-        u.last_check = datetime.utcnow()
+        u.last_check = utcnow()
         db.session.commit()
         flash(
             "%s is %s" % (u.addr, "reachable" if u.healthy else "unreachable"),
